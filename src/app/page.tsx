@@ -1,10 +1,12 @@
 import Banner from "@/components/banner";
-import Image from "next/image";
+import NewArrivals from "@/components/newArrivals";
+
 
 export default function Home() {
   return (
     <div>
       <Banner></Banner>
+      <NewArrivals></NewArrivals>
     </div>
   );
 }
