@@ -60,11 +60,11 @@ const Navbar = () => {
             variant="outline"
             className="border-[#004D3B] text-[#004D3B] hover:bg-[#004D3B] hover:text-[#FFF8E7]"
           >
-            <Link href="/login">Login</Link>
+            <Link href="/log-in">Login</Link>
           </Button>
 
           <Button className="bg-[#004D3B] text-[#FFF8E7] hover:bg-[#FFAA00] hover:text-[#004D3B]">
-            <Link href="/register">Register</Link>
+            <Link href="/sign-up">Register</Link>
           </Button>
         </div>
       </div>
