@@ -12,9 +12,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { authClient } from "@/lib/auth-client";
 
 const AddBookPage = () => {
   const [category, setCategory] = useState("");
+  const { data: session, isPending } = authClient.useSession();
 
   const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,6 +30,10 @@ const AddBookPage = () => {
       image: formData.get("image"),
       description: formData.get("description"),
       submittedAt: new Date().toISOString(),
+      addedBy: {
+        name: session?.user.name,
+        email: session?.user.email,
+      },
     };
     const res = await fetch("http://localhost:8000/add-book",{
         method: "POST",

@@ -1,7 +1,30 @@
+"use client"
+import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { FaGoogle } from "react-icons/fa";
 
 const LoginPage = () => {
+  const handleLogIn = async(e: React.FormEvent<HTMLFormElement>)=> {
+      e.preventDefault();
+      
+      const formData = new FormData(e.currentTarget);
+      const userData = Object.fromEntries(formData.entries())
+      
+      const { data, error } = await authClient.signIn.email({
+        
+        email: userData.email as string,
+        password: userData.password as string,
+        
+      });
+      if(data){
+        redirect("/")
+      }
+      if(error){
+        alert(error)
+      }
+  
+    }
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#FFF8E7] px-4 py-12">
       <div className="w-full max-w-md">
@@ -19,7 +42,7 @@ const LoginPage = () => {
           </div>
 
           {/* Login Form */}
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleLogIn}>
             {/* Email */}
             <div>
               <label
@@ -32,6 +55,7 @@ const LoginPage = () => {
               <input
                 id="email"
                 type="email"
+                name="email"
                 placeholder="Enter your email"
                 className="w-full rounded-xl border border-gray-200 bg-[#FFF8E7]/40 px-4 py-3 text-gray-800 outline-none transition focus:border-[#004D3B] focus:ring-2 focus:ring-[#004D3B]/10"
               />
@@ -49,6 +73,7 @@ const LoginPage = () => {
               <input
                 id="password"
                 type="password"
+                name="password"
                 placeholder="Enter your password"
                 className="w-full rounded-xl border border-gray-200 bg-[#FFF8E7]/40 px-4 py-3 text-gray-800 outline-none transition focus:border-[#004D3B] focus:ring-2 focus:ring-[#004D3B]/10"
               />
@@ -69,7 +94,7 @@ const LoginPage = () => {
 
             {/* Login Button */}
             <button
-              type="button"
+              type="submit"
               className="w-full rounded-xl bg-[#004D3B] px-6 py-3.5 font-bold text-white shadow-md transition hover:bg-[#00382B] hover:shadow-lg"
             >
               Login
@@ -96,7 +121,7 @@ const LoginPage = () => {
           <p className="mt-8 text-center text-sm text-gray-600">
             Don't have an account?{" "}
             <Link
-              href="/register"
+              href="/sign-up"
               className="font-bold text-[#004D3B] transition hover:text-[#FFAA00]"
             >
               Register Now

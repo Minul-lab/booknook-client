@@ -1,11 +1,17 @@
+
+import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
+import BorrowBtn from "@/components/borrowBtn";
 
 const bookDetailPage = async ({ params }) => {
+  
   const { id } = await params;
 
   const res = await fetch(`http://localhost:8000/all-books/${id}`);
 
   const data = await res.json();
+  
+  
 
   console.log(data);
 
@@ -81,9 +87,7 @@ const bookDetailPage = async ({ params }) => {
             </div>
 
             {/* Borrow Button */}
-            <button className="mt-8 w-full rounded-xl bg-[#004D3B] px-6 py-4 font-bold text-white shadow-md transition-all duration-300 hover:bg-[#00382B] hover:shadow-lg">
-              Borrow This Book
-            </button>
+            <BorrowBtn data={data}></BorrowBtn>
           </div>
         </div>
       </div>
