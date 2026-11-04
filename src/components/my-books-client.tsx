@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -165,59 +165,68 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
       ) : (
         <div className="space-y-4">
           {books.map((book) => (
-            <div
+            <Link
+              className="mb-6"
               key={book._id}
-              className="group flex flex-row overflow-hidden rounded-xl border border-[#004D3B]/15 bg-[#FFF8E7] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#FFAA00] hover:shadow-lg"
+              href={`http://localhost:3000/books/${book._id}`}
             >
-              {/* Book Image */}
-              <div className="h-40 w-28 shrink-0 overflow-hidden sm:h-44 sm:w-36">
-                <img
-                  src={book.image}
-                  alt={book.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-              </div>
-
-              {/* Book Details */}
-              <div className="flex min-w-0 flex-1 flex-col justify-between p-4 sm:flex-row sm:items-center sm:p-5">
-                <div className="min-w-0 space-y-2">
-                  <span className="inline-block rounded-full bg-[#004D3B]/10 px-3 py-1 text-xs font-semibold text-[#004D3B]">
-                    {book.category}
-                  </span>
-
-                  <h2 className="truncate text-lg font-bold text-[#004D3B] transition-colors group-hover:text-[#FFAA00] sm:text-xl">
-                    {book.title}
-                  </h2>
-
-                  <p className="text-sm font-medium text-[#004D3B]/70">
-                    By {book.author}
-                  </p>
-
-                  <p className="text-xs text-[#004D3B]/50">
-                    Added on {new Date(book.submittedAt).toLocaleDateString()}
-                  </p>
+              <div className="group mb-6 flex flex-row overflow-hidden rounded-xl border border-[#004D3B]/15 bg-[#FFAA00]/8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#FFAA00] hover:shadow-lg">
+                {/* Book Image */}
+                <div className="h-40 w-28 shrink-0 overflow-hidden sm:h-44 sm:w-36">
+                  <img
+                    src={book.image}
+                    alt={book.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
                 </div>
 
-                {/* Action Buttons */}
-                <div className="mt-4 flex shrink-0 gap-2 sm:mt-0 sm:flex-col">
-                  <Button
-                    onClick={() => handleEdit(book)}
-                    className="bg-[#004D3B] text-[#FFF8E7] transition-all hover:bg-[#00382B]"
-                    size="lg"
-                  >
-                    Edit
-                  </Button>
+                {/* Book Details */}
+                <div className="flex min-w-0 flex-1 flex-col justify-between p-4 sm:flex-row sm:items-center sm:p-5">
+                  <div className="min-w-0 space-y-2">
+                    <span className="inline-block rounded-full bg-[#004D3B]/10 px-3 py-1 text-xs font-semibold text-[#004D3B]">
+                      {book.category}
+                    </span>
 
-                  <Button
-                    onClick={() => setDeleteBook(book)}
-                    className="bg-[#FFAA00] text-[#004D3B] px-10 transition-all hover:bg-[#E69900]"
-                    size="lg"
-                  >
-                    Delete
-                  </Button>
+                    <h2 className="truncate text-lg font-bold text-[#004D3B] transition-colors group-hover:text-[#FFAA00] sm:text-xl">
+                      {book.title}
+                    </h2>
+
+                    <p className="text-sm font-medium text-[#004D3B]/70">
+                      By {book.author}
+                    </p>
+
+                    <p className="text-xs text-[#004D3B]/50">
+                      Added on{" "}
+                      {new Date(book.submittedAt).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        timeZone: "UTC",
+                      })}
+                    </p>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="mt-4 flex shrink-0 gap-2 sm:mt-0 sm:flex-col">
+                    <Button
+                      onClick={() => handleEdit(book)}
+                      className="bg-[#004D3B] text-[#FFF8E7] transition-all hover:bg-[#00382B]"
+                      size="lg"
+                    >
+                      Edit
+                    </Button>
+
+                    <Button
+                      onClick={() => setDeleteBook(book)}
+                      className="bg-[#FFAA00] text-[#004D3B] px-10 transition-all hover:bg-[#E69900]"
+                      size="lg"
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

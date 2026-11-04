@@ -1,6 +1,8 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+
 import MyBooksClient from "@/components/my-books-client";
+
 
 const MyBooksPage = async () => {
   const session = await auth.api.getSession({
@@ -25,7 +27,9 @@ const MyBooksPage = async () => {
 
   return (
     <div className="bg-[#FFF8E7]">
-      <MyBooksClient initialBooks={data} />
+      
+        <MyBooksClient initialBooks={data}  />
+      
     </div>
   ); 
 };
