@@ -26,15 +26,18 @@ const AddBookPage = () => {
     const bookData = {
       title: formData.get("title"),
       author: formData.get("author"),
+      quantity: Number(formData.get("quantity")),
       category: category,
       image: formData.get("image"),
       description: formData.get("description"),
+
       submittedAt: new Date().toISOString(),
       addedBy: {
         name: session?.user.name,
         email: session?.user.email,
       },
     };
+    console.log(bookData)
     const res = await fetch("http://localhost:8000/add-book",{
         method: "POST",
         headers: {
@@ -43,8 +46,8 @@ const AddBookPage = () => {
         body: JSON.stringify(bookData)
     });
     const data = await res.json()
-
-    console.log("New Book:", data);
+    
+    
   };
 
   return (
@@ -80,17 +83,43 @@ const AddBookPage = () => {
           </div>
 
           {/* Author Name */}
-          <div className="space-y-2">
-            <Label htmlFor="author" className="font-semibold text-[#004D3B]">
-              Author Name
-            </Label>
-            <Input
-              id="author"
-              name="author"
-              placeholder="Enter author's name"
-              required
-              className="border-[#004D3B]/20 focus-visible:ring-[#FFAA00]"
-            />
+          <div className="space-y-2 flex col-2 w-100 gap-4">
+            <div>
+              <Label htmlFor="author" className="font-semibold text-[#004D3B]">
+                Author Name
+              </Label>
+              <Input
+                id="author"
+                name="author"
+                placeholder="Enter author's name"
+                required
+                className="border-[#004D3B]/20 focus-visible:ring-[#FFAA00]"
+              />
+            </div>
+            {/* Number of Copies */}
+            <div className="">
+              <Label
+                htmlFor="quantity"
+                className="font-semibold text-[#004D3B]"
+              >
+                Number of Copies
+              </Label>
+              <Input
+                id="quantity"
+                name="quantity"
+                type="number"
+                min="1"
+                step="1"
+                placeholder="Enter number of copies"
+                required
+                onKeyDown={(e) => {
+                  if (["e", "E", "+", "-", "."].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                className="border-[#004D3B]/20 focus-visible:ring-[#FFAA00]"
+              />
+            </div>
           </div>
 
           {/* Category */}
