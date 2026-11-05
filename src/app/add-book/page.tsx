@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,20 +17,28 @@ import { authClient } from "@/lib/auth-client";
 
 const AddBookPage = () => {
   const [category, setCategory] = useState("");
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session } = authClient.useSession();
 
-  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
 
+    const { data: tokenData } = await authClient.token();
+    const token = tokenData?.token;
+
+    if (!token) {
+      console.error("Authentication token not found");
+      return;
+    }
+
     const bookData = {
-      title: formData.get("title"),
-      author: formData.get("author"),
+      title: String(formData.get("title") ?? ""),
+      author: String(formData.get("author") ?? ""),
       quantity: Number(formData.get("quantity")),
       category: category,
-      image: formData.get("image"),
-      description: formData.get("description"),
+      image: String(formData.get("image") ?? ""),
+      description: String(formData.get("description") ?? ""),
 
       submittedAt: new Date().toISOString(),
       addedBy: {
@@ -37,17 +46,19 @@ const AddBookPage = () => {
         email: session?.user.email,
       },
     };
-    console.log(bookData)
-    const res = await fetch("http://localhost:8000/add-book",{
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookData)
+
+    console.log(bookData);
+
+    const res = await fetch("http://localhost:8000/add-book", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(bookData),
     });
-    const data = await res.json()
-    
-    
+
+    await res.json();
   };
 
   return (
@@ -96,6 +107,7 @@ const AddBookPage = () => {
                 className="border-[#004D3B]/20 focus-visible:ring-[#FFAA00]"
               />
             </div>
+
             {/* Number of Copies */}
             <div className="">
               <Label
@@ -125,7 +137,11 @@ const AddBookPage = () => {
           {/* Category */}
           <div className="space-y-2">
             <Label className="font-semibold text-[#004D3B]">Category</Label>
-            <Select value={category} onValueChange={setCategory} required>
+            <Select
+              value={category}
+              onValueChange={(value) => setCategory(value ?? "")}
+              required
+            >
               <SelectTrigger className="w-full border-[#004D3B]/20 focus:ring-[#FFAA00]">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>

@@ -3,19 +3,23 @@ import { headers } from "next/headers";
 
 import MyBooksClient from "@/components/my-books-client";
 
-
 const MyBooksPage = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   const user = session?.user;
+  const jwtToken = await auth.api.getToken({
+    headers: await headers(),
+  });
 
-  
   const res = await fetch(
     `http://localhost:8000/my-books/${encodeURIComponent(user.email)}`,
     {
       cache: "no-store",
+      headers: {
+        authorization: `Bearer ${jwtToken?.token}`,
+      },
     },
   );
 
@@ -27,11 +31,9 @@ const MyBooksPage = async () => {
 
   return (
     <div className="bg-[#FFF8E7]">
-      
-        <MyBooksClient initialBooks={data}  />
-      
+      <MyBooksClient initialBooks={data} />
     </div>
-  ); 
+  );
 };
 
 export default MyBooksPage;

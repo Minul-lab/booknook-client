@@ -173,7 +173,7 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
               <div className="group mb-6 flex flex-row overflow-hidden rounded-xl border border-[#004D3B]/15 bg-[#FFAA00]/8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#FFAA00] hover:shadow-lg">
                 {/* Book Image */}
                 <div className="h-40 w-28 shrink-0 overflow-hidden sm:h-44 sm:w-36">
-                  <img
+                  <Image
                     src={book.image}
                     alt={book.title}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
