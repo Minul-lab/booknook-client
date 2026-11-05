@@ -18,7 +18,7 @@ const MyBooksPage = async () => {
   const token=await getTokenFromServer()
 
   const res = await fetch(
-    `http://localhost:8000/my-books/${user.email}`,
+    `${process.env.NEXT_PUBLIC_URL}/my-books/${user.email}`,
     {
       cache: "no-store",
       headers: {

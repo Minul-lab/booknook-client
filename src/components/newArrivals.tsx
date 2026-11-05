@@ -1,10 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const NewArrivals = async () => {
-  const res = await fetch("http://localhost:8000/latest-books");
+interface Book {
+  _id: string;
+  title: string;
+  author: string;
+  category: string;
+  image: string;
+}
 
-  const books = await res.json();
+const NewArrivals = async () => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/latest-books`);
+
+  const books: Book[] = await res.json();
 
   return (
     <section className="bg-[#FFF8E7] px-4 py-16 sm:px-8 lg:px-16">
@@ -33,7 +41,7 @@ const NewArrivals = async () => {
               className="group flex flex-col overflow-hidden rounded-2xl border border-[#004D3B]/10 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
             >
               {/* Image */}
-              <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+              <div className="relative aspect-4/3 overflow-hidden bg-gray-100">
                 <Image
                   src={book.image}
                   alt={book.title}

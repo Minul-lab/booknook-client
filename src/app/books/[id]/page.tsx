@@ -1,7 +1,6 @@
 import Image from "next/image";
 import BorrowBtn from "@/components/borrowBtn";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+
 import { getTokenFromServer } from "@/lib/getTokenFromServer";
 
 interface Book {
@@ -28,7 +27,8 @@ const BookDetailPage = async ({ params }: BookDetailPageProps) => {
 
   const token =await getTokenFromServer()
 
-  const res = await fetch(`http://localhost:8000/all-books/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/all-books/${id}`, {
+    cache: "no-store",
     headers: {
       authorization: `Bearer ${token}`,
     },
@@ -78,6 +78,19 @@ const BookDetailPage = async ({ params }: BookDetailPageProps) => {
               Written by{" "}
               <span className="font-semibold text-gray-800">{data.author}</span>
             </p>
+            <div className="mt-4 flex items-center gap-3">
+              <span
+                className={`rounded-full px-4 py-2 text-sm font-semibold ${
+                  (data.quantity ?? 0) > 0
+                    ? "bg-[#004D3B]/10 text-[#004D3B]"
+                    : "bg-red-100 text-red-600"
+                }`}
+              >
+                {(data.quantity ?? 0) > 0
+                  ? `${data.quantity} ${data.quantity === 1 ? "copy" : "copies"} available`
+                  : "Not Available"}
+              </span>
+            </div>
 
             <div className="my-8 border-t border-gray-200"></div>
 

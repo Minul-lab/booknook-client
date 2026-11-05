@@ -51,7 +51,7 @@ const Banner = () => {
       >
         {slides.map((slide, index) => (
           <SwiperSlide key={slide.title} className="">
-            <div className="container mx-auto relative flex min-h-[420px] items-center  rounded-2xl px-8 py-16 md:min-h-[500px] md:px-16">
+            <div className="container mx-auto relative flex min-h-105 items-center  rounded-2xl px-8 py-16 md:min-h-125 md:px-16">
               {/* Background Image */}
               <Image
                 src={slide.image}
@@ -76,10 +76,11 @@ const Banner = () => {
                 </p>
 
                 <Button
-                  aschild='true'
+                  render={<Link href="/books" />}
+                  nativeButton={false}
                   className="bg-[#FFAA00] font-semibold text-[#004D3B] hover:bg-[#FFF8E7]"
                 >
-                  <Link href="/books">Browse Books</Link>
+                  Browse Books
                 </Button>
               </div>
             </div>

@@ -102,7 +102,7 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
       const token = await getTokenFromClient()
 
       const res = await fetch(
-        `http://localhost:8000/all-books/${selectedBook._id}`,
+        `${process.env.NEXT_PUBLIC_URL}/all-books/${selectedBook._id}`,
         {
           method: "PUT",
           headers: {
@@ -146,7 +146,7 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
       setDeleting(true);
 
       const res = await fetch(
-        `http://localhost:8000/all-books/${deleteBook._id}`,
+        `${process.env.NEXT_PUBLIC_URL}/all-books/${deleteBook._id}`,
         {
           method: "DELETE",
         },

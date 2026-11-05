@@ -13,7 +13,7 @@ const AllBooksPage = async () => {
   let books: Book[] = [];
 
   try {
-    const res = await fetch("http://localhost:8000/all-books", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/all-books`, {
       cache: "no-store",
     });
 

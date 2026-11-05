@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { Button } from "@/components/ui/button";
+
 import {
   Table,
   TableBody,
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 import { getTokenFromServer } from "@/lib/getTokenFromServer";
+import ReturnBtn from "@/components/return-book";
 
 interface BorrowedBook {
   _id: string;
@@ -37,7 +38,7 @@ const MyBorrowPage = async () => {
   const token = await getTokenFromServer();
 
   const res = await fetch(
-    `http://localhost:8000/borrow/${encodeURIComponent(user.email)}`,
+    `${process.env.NEXT_PUBLIC_URL}/borrow/${encodeURIComponent(user.email)}`,
     {
       cache: "no-store",
       headers: {
@@ -115,12 +116,7 @@ const MyBorrowPage = async () => {
                     </TableCell>
 
                     <TableCell className="text-right">
-                      <Button
-                        variant="outline"
-                        className="border-[#004D3B] text-[#004D3B] hover:bg-[#004D3B] hover:text-white"
-                      >
-                        Return Book
-                      </Button>
+                      <ReturnBtn book={book}></ReturnBtn>
                     </TableCell>
                   </TableRow>
                 ))}
