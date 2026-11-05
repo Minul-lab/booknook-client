@@ -1,13 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +23,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,12 +33,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import Image from "next/image";
+import { authClient } from "@/lib/auth-client";
 
 interface Book {
   _id: string;
   title: string;
   author: string;
+  quantity: number;
   category: string;
   image: string;
   description: string;
@@ -55,6 +63,7 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
   const [editForm, setEditForm] = useState({
     title: "",
     author: "",
+    quantity: "",
     category: "",
     image: "",
     description: "",
@@ -63,13 +72,13 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  // Open edit dialog and fill in the existing book information
+  // Open edit dialog with the old data filled in
   const handleEdit = (book: Book) => {
     setSelectedBook(book);
-
     setEditForm({
       title: book.title,
       author: book.author,
+      quantity: String(book.quantity ?? ""),
       category: book.category,
       image: book.image,
       description: book.description,
@@ -77,11 +86,24 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
   };
 
   // Update book
-  const handleUpdate = async () => {
+  const handleUpdate = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!selectedBook) return;
+
+    if (!editForm.category) {
+      toast.error("Please select a category.");
+      return;
+    }
 
     try {
       setSaving(true);
+
+      const { data: tokenData } = await authClient.token();
+      const token = tokenData?.token;
+
+      if (!token) {
+        throw new Error("Authentication token not found");
+      }
 
       const res = await fetch(
         `http://localhost:8000/all-books/${selectedBook._id}`,
@@ -89,8 +111,12 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(editForm),
+          body: JSON.stringify({
+            ...editForm,
+            quantity: Number(editForm.quantity),
+          }),
         },
       );
 
@@ -176,6 +202,8 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
                   <Image
                     src={book.image}
                     alt={book.title}
+                    width={100}
+                    height={200}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                 </div>
@@ -209,7 +237,11 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
                   {/* Action Buttons */}
                   <div className="mt-4 flex shrink-0 gap-2 sm:mt-0 sm:flex-col">
                     <Button
-                      onClick={() => handleEdit(book)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleEdit(book);
+                      }}
                       className="bg-[#004D3B] text-[#FFF8E7] transition-all hover:bg-[#00382B]"
                       size="lg"
                     >
@@ -217,7 +249,11 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
                     </Button>
 
                     <Button
-                      onClick={() => setDeleteBook(book)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setDeleteBook(book);
+                      }}
                       className="bg-[#FFAA00] text-[#004D3B] px-10 transition-all hover:bg-[#E69900]"
                       size="lg"
                     >
@@ -243,71 +279,158 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
             <DialogTitle>Edit Book</DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4 py-3">
+          <form onSubmit={handleUpdate} className="space-y-5">
+            {/* Book Title */}
             <div className="space-y-2">
-              <Label>Book Title</Label>
+              <Label
+                htmlFor="edit-title"
+                className="font-semibold text-[#004D3B]"
+              >
+                Book Title
+              </Label>
               <Input
+                id="edit-title"
+                placeholder="Enter book title"
+                required
                 value={editForm.title}
                 onChange={(e) =>
                   setEditForm({ ...editForm, title: e.target.value })
                 }
+                className="border-[#004D3B]/20 focus-visible:ring-[#FFAA00]"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>Author</Label>
-              <Input
-                value={editForm.author}
-                onChange={(e) =>
-                  setEditForm({ ...editForm, author: e.target.value })
-                }
-              />
+            {/* Author + Copies */}
+            <div className="flex gap-4">
+              <div className="flex-1 space-y-2">
+                <Label
+                  htmlFor="edit-author"
+                  className="font-semibold text-[#004D3B]"
+                >
+                  Author Name
+                </Label>
+                <Input
+                  id="edit-author"
+                  placeholder="Enter author's name"
+                  required
+                  value={editForm.author}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, author: e.target.value })
+                  }
+                  className="border-[#004D3B]/20 focus-visible:ring-[#FFAA00]"
+                />
+              </div>
+
+              <div className="flex-1 space-y-2">
+                <Label
+                  htmlFor="edit-quantity"
+                  className="font-semibold text-[#004D3B]"
+                >
+                  Number of Copies
+                </Label>
+                <Input
+                  id="edit-quantity"
+                  type="number"
+                  min="1"
+                  step="1"
+                  placeholder="Enter number of copies"
+                  required
+                  value={editForm.quantity}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, quantity: e.target.value })
+                  }
+                  onKeyDown={(e) => {
+                    if (["e", "E", "+", "-", "."].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  className="border-[#004D3B]/20 focus-visible:ring-[#FFAA00]"
+                />
+              </div>
             </div>
 
+            {/* Category */}
             <div className="space-y-2">
-              <Label>Category</Label>
-              <Input
+              <Label className="font-semibold text-[#004D3B]">Category</Label>
+              <Select
                 value={editForm.category}
-                onChange={(e) =>
-                  setEditForm({ ...editForm, category: e.target.value })
+                onValueChange={(value) =>
+                  setEditForm({ ...editForm, category: value ?? "" })
                 }
-              />
+              >
+                <SelectTrigger className="w-full border-[#004D3B]/20 focus:ring-[#FFAA00]">
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Fiction">Fiction</SelectItem>
+                  <SelectItem value="Science">Science</SelectItem>
+                  <SelectItem value="History">History</SelectItem>
+                  <SelectItem value="Kids">Kids</SelectItem>
+                  <SelectItem value="Others">Others</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
+            {/* Image URL */}
             <div className="space-y-2">
-              <Label>Image URL</Label>
+              <Label
+                htmlFor="edit-image"
+                className="font-semibold text-[#004D3B]"
+              >
+                Book Image URL
+              </Label>
               <Input
+                id="edit-image"
+                type="url"
+                placeholder="https://i.ibb.co/your-image.jpg"
+                required
                 value={editForm.image}
                 onChange={(e) =>
                   setEditForm({ ...editForm, image: e.target.value })
                 }
+                className="border-[#004D3B]/20 focus-visible:ring-[#FFAA00]"
               />
             </div>
 
+            {/* Description */}
             <div className="space-y-2">
-              <Label>Description</Label>
+              <Label
+                htmlFor="edit-description"
+                className="font-semibold text-[#004D3B]"
+              >
+                Short Description
+              </Label>
               <Textarea
+                id="edit-description"
                 rows={4}
+                required
+                placeholder="Write a short description about this book..."
                 value={editForm.description}
                 onChange={(e) =>
-                  setEditForm({
-                    ...editForm,
-                    description: e.target.value,
-                  })
+                  setEditForm({ ...editForm, description: e.target.value })
                 }
+                className="resize-none border-[#004D3B]/20 focus-visible:ring-[#FFAA00]"
               />
             </div>
-          </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSelectedBook(null)}>
-              Cancel
-            </Button>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setSelectedBook(null)}
+              >
+                Cancel
+              </Button>
 
-            <Button onClick={handleUpdate} disabled={saving}>
-              {saving ? "Saving..." : "Save Changes"}
-            </Button>
-          </DialogFooter>
+              <Button
+                type="submit"
+                disabled={saving}
+                className="bg-[#004D3B] text-[#FFF8E7] hover:bg-[#00382B]"
+              >
+                {saving ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 
