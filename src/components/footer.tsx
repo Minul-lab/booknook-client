@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
-const LOGO_SRC = "/BookNook Open-Book Emblem.png"; // put your logo image link here
+
 
 const socialLinks = [
   { name: "Facebook", href: "https://facebook.com", icon: FaFacebookF },
@@ -29,11 +29,11 @@ const Footer = () => {
             <Image
               src="/BookNook Open-Book Emblem.png"
               alt="BookNook logo"
-              width={100}
-              height={50}
+              width={400}
+              height={200}
               className="h-20 w-40 object-contain"
             />
-            
+            <span className="text-2xl font-bold">BookNook</span>
           </Link>
           <p className="max-w-xs text-sm leading-relaxed text-[#FFF8E7]/80">
             Borrow your next read and share your own books with a community of
