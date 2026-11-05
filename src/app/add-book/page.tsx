@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 const AddBookPage = () => {
   const [category, setCategory] = useState("");
@@ -24,13 +25,7 @@ const AddBookPage = () => {
 
     const formData = new FormData(e.currentTarget);
 
-    const { data: tokenData } = await authClient.token();
-    const token = tokenData?.token;
-
-    if (!token) {
-      console.error("Authentication token not found");
-      return;
-    }
+   const token =await getTokenFromClient()
 
     const bookData = {
       title: String(formData.get("title") ?? ""),

@@ -1,8 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 
+interface Book {
+  _id: string;
+  title: string;
+  author: string;
+  category: string;
+  image: string;
+}
+
 const AllBooksPage = async () => {
-  let books = [];
+  let books: Book[] = [];
 
   try {
     const res = await fetch("http://localhost:8000/all-books", {
@@ -39,7 +47,7 @@ const AllBooksPage = async () => {
             className="group flex flex-col overflow-hidden rounded-2xl border border-[#004D3B]/10 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#FFAA00] hover:shadow-lg"
           >
             {/* Book Image */}
-            <div className="aspect-[4/3] overflow-hidden bg-gray-100">
+            <div className="aspect-4/3 overflow-hidden bg-gray-100">
               <Image
                 src={book.image}
                 alt={book.title}

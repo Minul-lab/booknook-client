@@ -10,19 +10,55 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Image from "next/image";
+import { getTokenFromServer } from "@/lib/getTokenFromServer";
 
+interface BorrowedBook {
+  _id: string;
+  image: string;
+  title: string;
+  borrowedAt: string;
+}
 
-const MyBorrowPage = async() => {
-    const session = await auth.api.getSession({
-      headers: await headers(), // you need to pass the headers object.
-    });
-    const user = session?.user
-    const res = await fetch(`http://localhost:8000/borrow/${user?.email}`);
-    const data = await res.json()
-    console.log(data)
+const MyBorrowPage = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  const user = session?.user;
+
+  if (!user) {
     return (
-         <main className="min-h-screen bg-[#FFF8E7] px-4 py-10">
-      <div className=" mx-auto container">
+      <div className="py-20 text-center">
+        Please log in to view your borrowed books.
+      </div>
+    );
+  }
+
+  const token = await getTokenFromServer();
+
+  const res = await fetch(
+    `http://localhost:8000/borrow/${encodeURIComponent(user.email)}`,
+    {
+      cache: "no-store",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  if (!res.ok) {
+    return (
+      <div className="py-20 text-center">Failed to load borrowed books.</div>
+    );
+  }
+
+  const data: BorrowedBook[] = await res.json();
+
+  console.log(data);
+
+  return (
+    <main className="min-h-screen bg-[#FFF8E7] px-4 py-10">
+      <div className="mx-auto container">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-[#004D3B]">
             My Borrowed Books
@@ -70,15 +106,12 @@ const MyBorrowPage = async() => {
                     </TableCell>
 
                     <TableCell className="text-[#004D3B]/70">
-                      {new Date(book.borrowedAt).toLocaleDateString(
-                        "en-GB",
-                        {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                          timeZone: "Asia/Dhaka",
-                        }
-                      )}
+                      {new Date(book.borrowedAt).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        timeZone: "Asia/Dhaka",
+                      })}
                     </TableCell>
 
                     <TableCell className="text-right">
@@ -99,7 +132,5 @@ const MyBorrowPage = async() => {
     </main>
   );
 };
-    
-
 
 export default MyBorrowPage;

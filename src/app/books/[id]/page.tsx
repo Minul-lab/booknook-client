@@ -1,31 +1,40 @@
-
-import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import BorrowBtn from "@/components/borrowBtn";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { getTokenFromServer } from "@/lib/getTokenFromServer";
 
-const bookDetailPage = async ({ params }) => {
-  
+interface Book {
+  _id: string;
+  title: string;
+  author: string;
+  quantity?: number;
+  category: string;
+  image: string;
+  description: string;
+  submittedAt: string;
+  addedBy?: {
+    name?: string;
+    email?: string;
+  };
+}
+
+interface BookDetailPageProps {
+  params: Promise<{ id: string }>;
+}
+
+const BookDetailPage = async ({ params }: BookDetailPageProps) => {
   const { id } = await params;
 
-  const jwtToken = await auth.api.getToken({
-    headers: await headers(),
-  })
-  // console.log(jwtTokentoken)
-  console.log(`jwtToken?.token`)
+  const token =await getTokenFromServer()
 
-  const res = await fetch(`http://localhost:8000/all-books/${id}`,{
-    headers:{
-      authorization:`Bearer ${jwtToken?.token}`
-    }
+  const res = await fetch(`http://localhost:8000/all-books/${id}`, {
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
   });
 
-  const data = await res.json();
-  
-  
-
-  console.log(data);
+  const data: Book = await res.json();
 
   return (
     <main className="min-h-screen bg-[#FFF8E7] px-4 py-12 sm:px-8 lg:px-16">
@@ -41,7 +50,7 @@ const bookDetailPage = async ({ params }) => {
         {/* Details Card */}
         <div className="grid overflow-hidden rounded-3xl bg-white shadow-lg md:grid-cols-2">
           {/* Book Image */}
-          <div className="relative min-h-[350px] bg-gray-100 sm:min-h-[450px]">
+          <div className="relative min-h-87.5 bg-gray-100 sm:min-h-112.5">
             <Image
               src={data.image}
               alt={data.title}
@@ -99,7 +108,7 @@ const bookDetailPage = async ({ params }) => {
             </div>
 
             {/* Borrow Button */}
-            <BorrowBtn data={data}></BorrowBtn>
+            <BorrowBtn data={data} />
           </div>
         </div>
       </div>
@@ -107,4 +116,4 @@ const bookDetailPage = async ({ params }) => {
   );
 };
 
-export default bookDetailPage;
+export default BookDetailPage;

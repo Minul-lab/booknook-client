@@ -34,6 +34,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 interface Book {
   _id: string;
@@ -98,12 +99,7 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
     try {
       setSaving(true);
 
-      const { data: tokenData } = await authClient.token();
-      const token = tokenData?.token;
-
-      if (!token) {
-        throw new Error("Authentication token not found");
-      }
+      const token = await getTokenFromClient()
 
       const res = await fetch(
         `http://localhost:8000/all-books/${selectedBook._id}`,
@@ -185,7 +181,7 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
         <div className="rounded-xl border border-dashed py-16 text-center">
           <h2 className="text-xl font-semibold">No books found</h2>
           <p className="mt-2 text-muted-foreground">
-            You haven't added any books yet.
+            You haven&apos;t added any books yet.
           </p>
         </div>
       ) : (
@@ -445,9 +441,9 @@ const MyBooksClient = ({ initialBooks }: MyBooksClientProps) => {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
 
-            <AlertDialogDescription>
-              This will permanently delete "{deleteBook?.title}" from your
-              collection. This action cannot be undone.
+            <AlertDialogDescription>{
+              `This will permanently delete "${deleteBook?.title}" from your
+              collection. This action cannot be undone.`}
             </AlertDialogDescription>
           </AlertDialogHeader>
 

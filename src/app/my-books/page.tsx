@@ -2,23 +2,27 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
 import MyBooksClient from "@/components/my-books-client";
+import { getTokenFromServer } from "@/lib/getTokenFromServer";
 
 const MyBooksPage = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+  if (!session) {
+    return (
+      <div className="py-20 text-center">Please log in to see your books.</div>
+    );
+  }
 
   const user = session?.user;
-  const jwtToken = await auth.api.getToken({
-    headers: await headers(),
-  });
+  const token=await getTokenFromServer()
 
   const res = await fetch(
-    `http://localhost:8000/my-books/${encodeURIComponent(user.email)}`,
+    `http://localhost:8000/my-books/${user.email}`,
     {
       cache: "no-store",
       headers: {
-        authorization: `Bearer ${jwtToken?.token}`,
+        authorization: `Bearer ${token}`,
       },
     },
   );
