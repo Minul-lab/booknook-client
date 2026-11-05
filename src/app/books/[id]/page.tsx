@@ -2,12 +2,24 @@
 import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import BorrowBtn from "@/components/borrowBtn";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const bookDetailPage = async ({ params }) => {
   
   const { id } = await params;
 
-  const res = await fetch(`http://localhost:8000/all-books/${id}`);
+  const jwtToken = await auth.api.getToken({
+    headers: await headers(),
+  })
+  // console.log(jwtTokentoken)
+  console.log(`jwtToken?.token`)
+
+  const res = await fetch(`http://localhost:8000/all-books/${id}`,{
+    headers:{
+      authorization:`Bearer ${jwtToken?.token}`
+    }
+  });
 
   const data = await res.json();
   
