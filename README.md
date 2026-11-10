@@ -2,9 +2,9 @@
 
 BookNook is a small online library. Add a book, borrow a book, return a book.
 
-**Live Site:** https://your-live-site-url.vercel.app
-**Server Repository:** https://github.com/your-username/booknook-server
-**Server Live URL:** https://your-server-url.vercel.app
+**Live Site:** [https://booknook-frontend-by-minul.vercel.app]
+**Server Repository:** https://github.com/Minul-lab/booknook-server
+**Server Live URL:** https://booknook-server-by-minul.vercel.app/
 
 ---
 
@@ -54,7 +54,7 @@ BookNook is a small online library. Add a book, borrow a book, return a book.
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/your-username/booknook-client.git
+git clone https://github.com/Minul-lab/booknook-client
 cd booknook-client
 npm install
 ```
@@ -87,7 +87,7 @@ For Google login, add `http://localhost:3000/api/auth/callback/google` as an aut
 npm run dev
 ```
 
-Open http://localhost:3000. The [BookNook server](https://github.com/your-username/booknook-server) must be running for books and borrows to load.
+Open http://localhost:3000. The [BookNook server](https://github.com/Minul-lab/booknook-server) must be running for books and borrows to load.
 
 ---
 
